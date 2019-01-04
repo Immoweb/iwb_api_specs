@@ -1,0 +1,1361 @@
+{
+  "openapi" : "3.0.0",
+  "info" : {
+    "title" : "Advertisements",
+    "description" : "This is the new API to retrieve Advertisements based on new Micro services",
+    "version" : "2.0"
+  },
+  "externalDocs" : {
+    "description" : "Find out more about Swagger",
+    "url" : "http://swagger.io"
+  },
+  "servers" : [ {
+    "url" : "https://testapigw.immoweb.be/",
+    "description" : "APIGW test server"
+  } ],
+  "tags" : [ {
+    "name" : "Advertisements",
+    "description" : "API to retrieve ads to display along side Immoweb classifieds"
+  }, {
+    "name" : "Campaign Content",
+    "description" : "API to handle the material and content of ads "
+  } ],
+  "paths" : {
+    "/advertisements" : {
+      "get" : {
+        "tags" : [ "Advertisements" ],
+        "description" : "Retrieve advertisements to display alongside classifieds based on segments and localisation",
+        "parameters" : [ {
+          "name" : "Accept",
+          "in" : "header",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "application/vnd.be.immoweb.advertisements.v2.0+json" ]
+          }
+        }, {
+          "name" : "Accept-Language",
+          "in" : "header",
+          "description" : "Accept-Language: fr, be or nl. Default if not provided is en",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/x-enums/AcceptedLanguages"
+          }
+        }, {
+          "name" : "postalCodes",
+          "in" : "query",
+          "description" : "PostalCodes of interest as csv",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "segment",
+          "in" : "query",
+          "description" : "Customer Segments of interest.\n",
+          "required" : false,
+          "deprecated" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "$ref" : "#/x-enums/Segments"
+          }
+        }, {
+          "name" : "context",
+          "in" : "query",
+          "description" : "The page / screen where the advertising should be displayed\n",
+          "required" : false,
+          "deprecated" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "$ref" : "#/x-enums/DisplayContexts"
+          }
+        }, {
+          "name" : "searchContext",
+          "in" : "query",
+          "description" : "Filter the Advertisment sent according the right Segment/Product Code\n",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "$ref" : "#/x-enums/SearchContext"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/vnd.be.immoweb.advertisements.v2.0+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Advertisements"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Request is malformed",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/x-maskedModels/CommonErrors-400"
+                }
+              }
+            }
+          },
+          "415" : {
+            "description" : "Unsupported media type",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/x-maskedModels/CommonErrors-415"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "apikey_advertisements" : [ ]
+        } ]
+      }
+    },
+    "/advertisements/campaigns/{campaignId}/content" : {
+      "get" : {
+        "tags" : [ "Campaign Content" ],
+        "summary" : "Find an advertising campaign content by ID",
+        "description" : "Returns a single campaign content",
+        "parameters" : [ {
+          "name" : "Accept",
+          "in" : "header",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "application/vnd.be.immoweb.advertisement.v2.0+json" ]
+          }
+        }, {
+          "name" : "Accept-Language",
+          "in" : "header",
+          "description" : "Accept-Language: fr, be or nl",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/x-enums/AcceptedLanguages"
+          }
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "description" : "optional header to pass user authentication token",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "campaignId",
+          "in" : "path",
+          "description" : "ID of campaign to post to",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/vnd.be.immoweb.advertisement.v2.0+json" : {
+                "schema" : {
+                  "type" : "object",
+                  "discriminator" : {
+                    "propertyName" : "campaign.type"
+                  },
+                  "oneOf" : [ {
+                    "$ref" : "#/components/schemas/AdimsContent"
+                  }, {
+                    "$ref" : "#/components/schemas/AdimsXLContent"
+                  }, {
+                    "$ref" : "#/components/schemas/AdimHomepageContent"
+                  }, {
+                    "$ref" : "#/components/schemas/AdFocusHomepageContent"
+                  }, {
+                    "$ref" : "#/components/schemas/AdFocusResultListContent"
+                  }, {
+                    "$ref" : "#/components/schemas/AdMaxContent"
+                  } ]
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Request is malformed",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/x-maskedModels/CommonErrors-400"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Access is not authorized. Check Oauth2 token",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/x-maskedModels/AdvertisementCampaignContentResponses/UNAUTHORIZED"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Classified not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/x-maskedModels/AdvertisementCampaignContentResponses/NOT_FOUND"
+                }
+              }
+            }
+          },
+          "415" : {
+            "description" : "Unsupported media type",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/x-maskedModels/CommonErrors-415"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "apikey_advertisements" : [ ]
+        } ]
+      },
+      "put" : {
+        "tags" : [ "Campaign Content" ],
+        "description" : "Allows user to post content for an advertising campaign",
+        "parameters" : [ {
+          "name" : "Content-Type",
+          "in" : "header",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "application/vnd.be.immoweb.advertisement.v2.0+json" ]
+          }
+        }, {
+          "name" : "campaignId",
+          "in" : "path",
+          "description" : "ID of campaign to post to",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/vnd.be.immoweb.advertisement.v2.0+json" : {
+              "schema" : {
+                "oneOf" : [ {
+                  "$ref" : "#/components/schemas/AdimsContent"
+                }, {
+                  "$ref" : "#/components/schemas/AdimsXLContent"
+                }, {
+                  "$ref" : "#/components/schemas/AdimHomepageContent"
+                }, {
+                  "$ref" : "#/components/schemas/AdFocusHomepageContent"
+                }, {
+                  "$ref" : "#/components/schemas/AdFocusResultListContent"
+                }, {
+                  "$ref" : "#/components/schemas/AdMaxContent"
+                } ]
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/x-maskedModels/AdvertisementCampaignContentResponses/CREATED"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/x-maskedModels/AdvertisementCampaignContentResponses/BADREQUEST"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/x-maskedModels/AdvertisementCampaignContentResponses/UNAUTHORIZED"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Forbidden",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/x-maskedModels/AdvertisementCampaignContentResponses/FORBIDDEN"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "apikey_advertisements" : [ ]
+        } ]
+      },
+      "post" : {
+        "tags" : [ "Campaign Content" ],
+        "description" : "Allows user to post content for an advertising campaign",
+        "parameters" : [ {
+          "name" : "Content-Type",
+          "in" : "header",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "application/vnd.be.immoweb.advertisement.v2.0+json" ]
+          }
+        }, {
+          "name" : "campaignId",
+          "in" : "path",
+          "description" : "ID of campaign to post to",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/vnd.be.immoweb.advertisement.v2.0+json" : {
+              "schema" : {
+                "oneOf" : [ {
+                  "$ref" : "#/components/schemas/AdimsContent"
+                }, {
+                  "$ref" : "#/components/schemas/AdimsXLContent"
+                }, {
+                  "$ref" : "#/components/schemas/AdimHomepageContent"
+                }, {
+                  "$ref" : "#/components/schemas/AdFocusHomepageContent"
+                }, {
+                  "$ref" : "#/components/schemas/AdFocusResultListContent"
+                }, {
+                  "$ref" : "#/components/schemas/AdMaxContent"
+                } ]
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/x-maskedModels/AdvertisementCampaignContentResponses/CREATED"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/x-maskedModels/AdvertisementCampaignContentResponses/BADREQUEST"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/x-maskedModels/AdvertisementCampaignContentResponses/UNAUTHORIZED"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Forbidden",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/x-maskedModels/AdvertisementCampaignContentResponses/FORBIDDEN"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "apikey_advertisements" : [ ]
+        } ]
+      },
+      "patch" : {
+        "tags" : [ "Campaign Content" ],
+        "description" : "Allows user to post content for an advertising campaign",
+        "parameters" : [ {
+          "name" : "Content-Type",
+          "in" : "header",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "application/vnd.be.immoweb.advertisement.v2.0+json" ]
+          }
+        }, {
+          "name" : "campaignId",
+          "in" : "path",
+          "description" : "ID of campaign to post to",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/vnd.be.immoweb.advertisement.v2.0+json" : {
+              "schema" : {
+                "oneOf" : [ {
+                  "$ref" : "#/components/schemas/AdimsContent"
+                }, {
+                  "$ref" : "#/components/schemas/AdimsXLContent"
+                }, {
+                  "$ref" : "#/components/schemas/AdimHomepageContent"
+                }, {
+                  "$ref" : "#/components/schemas/AdFocusHomepageContent"
+                }, {
+                  "$ref" : "#/components/schemas/AdFocusResultListContent"
+                }, {
+                  "$ref" : "#/components/schemas/AdMaxContent"
+                } ]
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/x-maskedModels/AdvertisementCampaignContentResponses/CREATED"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/x-maskedModels/AdvertisementCampaignContentResponses/BADREQUEST"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/x-maskedModels/AdvertisementCampaignContentResponses/UNAUTHORIZED"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Forbidden",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/x-maskedModels/AdvertisementCampaignContentResponses/FORBIDDEN"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "apikey_advertisements" : [ ]
+        } ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "AbstractAdvertisement" : {
+        "type" : "object",
+        "properties" : {
+          "customer" : {
+            "$ref" : "#/components/schemas/AbstractAdvertisement_customer"
+          },
+          "id" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int32",
+              "example" : 12345
+            }
+          },
+          "internalLinkTarget" : {
+            "$ref" : "#/components/schemas/AbstractAdvertisement_internalLinkTarget"
+          },
+          "lastModificationDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        },
+        "description" : "Abstract Model defining common Advertisement"
+      },
+      "Adims" : {
+        "properties" : {
+          "internalLinkTarget" : {
+            "$ref" : "#/components/schemas/AbstractAdvertisement_internalLinkTarget"
+          }
+        },
+        "description" : "The purpose of the \"ADIMS\" is to increase the visibility of a certain agency in the classified result list.",
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/AbstractAdvertisement"
+        }, {
+          "type" : "object"
+        } ]
+      },
+      "AdimsHomepage" : {
+        "properties" : {
+          "internalLinkTarget" : {
+            "$ref" : "#/components/schemas/AbstractAdvertisement_internalLinkTarget"
+          },
+          "customer" : {
+            "$ref" : "#/components/schemas/AdimsHomepage_customer"
+          },
+          "description" : {
+            "type" : "string",
+            "example" : "The description of the advertisement"
+          },
+          "title" : {
+            "type" : "string",
+            "example" : "The title of the advertisement"
+          }
+        },
+        "description" : "The purpose of the \"ADIMS on the homepage\" is to increase the visibility of an agency in the homepage so that user can see a description of the agency more easily.",
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/AbstractAdvertisement"
+        }, {
+          "type" : "object"
+        } ]
+      },
+      "AdimsXL" : {
+        "properties" : {
+          "internalLinkTarget" : {
+            "$ref" : "#/components/schemas/AbstractAdvertisement_internalLinkTarget"
+          },
+          "customer" : {
+            "$ref" : "#/components/schemas/AdimsXL_customer"
+          }
+        },
+        "description" : "The purpose of the \"ADIMS XL\" is to increase the visibility of a certain agency in the classified result list.",
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/AbstractAdvertisement"
+        }, {
+          "type" : "object"
+        } ]
+      },
+      "AdFocusHomepage" : {
+        "properties" : {
+          "internalLinkTarget" : {
+            "$ref" : "#/components/schemas/AbstractAdvertisement_internalLinkTarget"
+          },
+          "customer" : {
+            "$ref" : "#/components/schemas/AdFocusHomepage_customer"
+          },
+          "classified" : {
+            "$ref" : "#/components/schemas/AdFocusHomepage_classified"
+          }
+        },
+        "description" : "The purpose of the \"Adfocus on the Homepage\" is to increase the visibility of certain new build projects for agencies on the homepage",
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/AbstractAdvertisement"
+        }, {
+          "type" : "object"
+        } ]
+      },
+      "AdFocusResultList" : {
+        "properties" : {
+          "internalLinkTarget" : {
+            "$ref" : "#/components/schemas/AbstractAdvertisement_internalLinkTarget"
+          },
+          "customer" : {
+            "$ref" : "#/components/schemas/AdFocusHomepage_customer"
+          },
+          "classified" : {
+            "$ref" : "#/components/schemas/AdFocusHomepage_classified"
+          }
+        },
+        "description" : "The purpose of the \"Adfocus on the result list\" is to increase the visibility of certain new build projects for agencies in the classified result list",
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/AbstractAdvertisement"
+        }, {
+          "type" : "object"
+        } ]
+      },
+      "AdMax" : {
+        "properties" : {
+          "title" : {
+            "type" : "string",
+            "example" : "The title of the advertisement"
+          },
+          "callToActionText" : {
+            "type" : "string",
+            "example" : "Click here for more information."
+          },
+          "backgroundColor" : {
+            "type" : "string",
+            "description" : "The color of the background of the animation",
+            "example" : "#FFFFFF"
+          },
+          "internalLinkTarget" : {
+            "$ref" : "#/components/schemas/AbstractAdvertisement_internalLinkTarget"
+          },
+          "textColor" : {
+            "type" : "string",
+            "description" : "The color of the text used in the animation",
+            "example" : "#000000"
+          },
+          "customer" : {
+            "$ref" : "#/components/schemas/AdFocusHomepage_customer"
+          }
+        },
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/AbstractAdvertisement"
+        }, {
+          "type" : "object"
+        } ]
+      },
+      "AgencyInTheSpotlight" : {
+        "properties" : {
+          "customer" : {
+            "$ref" : "#/components/schemas/AgencyInTheSpotlight_customer"
+          },
+          "classifieds" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Classified"
+            }
+          }
+        },
+        "description" : "The purpose of the \"Agency in the Spotlight\" is to increase the visibility of a certain agency on the homepage together with properties that fits the users search.",
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/AbstractAdvertisement"
+        }, {
+          "type" : "object"
+        } ]
+      },
+      "AbstractAdvertisementContent" : {
+        "type" : "object",
+        "properties" : {
+          "campaign" : {
+            "$ref" : "#/components/schemas/AbstractAdvertisementContent_campaign"
+          }
+        },
+        "description" : "Abstract Model defining common Advertisement content"
+      },
+      "AdimsContent" : {
+        "properties" : {
+          "campaign" : {
+            "$ref" : "#/components/schemas/AdimsContent_campaign"
+          }
+        },
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/AbstractAdvertisementContent"
+        }, {
+          "type" : "object"
+        } ]
+      },
+      "AdimsXLContent" : {
+        "properties" : {
+          "campaign" : {
+            "$ref" : "#/components/schemas/AdimsContent_campaign"
+          }
+        },
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/AbstractAdvertisementContent"
+        }, {
+          "type" : "object"
+        } ]
+      },
+      "AdimHomepageContent" : {
+        "properties" : {
+          "campaign" : {
+            "$ref" : "#/components/schemas/AdimHomepageContent_campaign"
+          }
+        },
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/AbstractAdvertisementContent"
+        }, {
+          "type" : "object"
+        } ]
+      },
+      "AdFocusHomepageContent" : {
+        "properties" : {
+          "campaign" : {
+            "$ref" : "#/components/schemas/AdFocusHomepageContent_campaign"
+          }
+        },
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/AbstractAdvertisementContent"
+        }, {
+          "type" : "object"
+        } ]
+      },
+      "AdFocusResultListContent" : {
+        "properties" : {
+          "campaign" : {
+            "$ref" : "#/components/schemas/AdFocusHomepageContent_campaign"
+          }
+        },
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/AbstractAdvertisementContent"
+        }, {
+          "type" : "object"
+        } ]
+      },
+      "AdMaxContent" : {
+        "properties" : {
+          "campaign" : {
+            "$ref" : "#/components/schemas/AdMaxContent_campaign"
+          }
+        },
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/AbstractAdvertisementContent"
+        }, {
+          "type" : "object"
+        } ]
+      },
+      "Advertisements" : {
+        "type" : "object",
+        "properties" : {
+          "adims" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Adims"
+            }
+          },
+          "adimsHomepage" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/AdimsHomepage"
+            }
+          },
+          "adimsXL" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/AdimsXL"
+            }
+          },
+          "adFocusResultList" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/AdFocusResultList"
+            }
+          },
+          "adFocusHomepage" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/AdFocusHomepage"
+            }
+          },
+          "adMax" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/AdMax"
+            }
+          },
+          "agencyInTheSpotlight" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/AgencyInTheSpotlight"
+            }
+          }
+        }
+      },
+      "Classified" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 12345
+          }
+        },
+        "description" : "Abstract Model defining Classified"
+      },
+      "AbstractAdvertisement_customer" : {
+        "type" : "object",
+        "properties" : {
+          "logoUrl" : {
+            "type" : "string",
+            "format" : "uri",
+            "example" : "http://path.to/image"
+          }
+        }
+      },
+      "AbstractAdvertisement_internalLinkTarget" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "example" : "1234567"
+          },
+          "type" : {
+            "$ref" : "#/x-enums/AdvertisementInternalLinkTargets"
+          }
+        }
+      },
+      "AdimsHomepage_customer" : {
+        "type" : "object",
+        "properties" : {
+          "totalCount" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 352
+          },
+          "linkUrl" : {
+            "type" : "string",
+            "format" : "uri",
+            "example" : "http://path.to/page"
+          }
+        }
+      },
+      "AdimsXL_customer" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string",
+            "example" : "Agence XXL"
+          },
+          "postalCode" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 1190
+          },
+          "locality" : {
+            "type" : "string",
+            "example" : "Bruxelles"
+          },
+          "totalCount" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 352
+          }
+        }
+      },
+      "AdFocusHomepage_customer" : {
+        "type" : "object",
+        "properties" : {
+          "linkUrl" : {
+            "type" : "string",
+            "format" : "uri",
+            "example" : "http://path.to/page"
+          }
+        }
+      },
+      "AdFocusHomepage_classified_picture" : {
+        "type" : "object",
+        "properties" : {
+          "url" : {
+            "type" : "string",
+            "format" : "uri",
+            "example" : "http://path.to/picture"
+          },
+          "altText" : {
+            "type" : "string",
+            "example" : "Alternate image text"
+          }
+        }
+      },
+      "AdFocusHomepage_classified" : {
+        "type" : "object",
+        "properties" : {
+          "locality" : {
+            "type" : "string",
+            "example" : "Bruxelles"
+          },
+          "minimumUnitPrice" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 250000
+          },
+          "picture" : {
+            "$ref" : "#/components/schemas/AdFocusHomepage_classified_picture"
+          },
+          "propertyName" : {
+            "type" : "string",
+            "example" : "Le clos des champs"
+          },
+          "postalCode" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 1190
+          },
+          "soldPercentage" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 60
+          }
+        }
+      },
+      "AgencyInTheSpotlight_customer" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 1234567
+          },
+          "logoUrl" : {
+            "type" : "string",
+            "format" : "uri",
+            "example" : "http://path.to/logo"
+          },
+          "name" : {
+            "type" : "string",
+            "example" : "Agence Dubois"
+          },
+          "totalCount" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 352
+          }
+        }
+      },
+      "AbstractAdvertisementContent_campaign_content" : {
+        "type" : "object",
+        "properties" : {
+          "fr" : {
+            "type" : "object"
+          }
+        }
+      },
+      "AbstractAdvertisementContent_campaign" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int32",
+              "example" : 12345
+            }
+          },
+          "type" : {
+            "type" : "string",
+            "example" : "ADIM"
+          },
+          "lastModificationDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "content" : {
+            "$ref" : "#/components/schemas/AbstractAdvertisementContent_campaign_content"
+          }
+        }
+      },
+      "AdimsContent_campaign_content_fr_internalLinkTarget" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "type" : {
+            "$ref" : "#/x-enums/AdvertisementInternalLinkTargets"
+          }
+        }
+      },
+      "AdimsContent_campaign_content_fr" : {
+        "type" : "object",
+        "properties" : {
+          "internalLinkTarget" : {
+            "$ref" : "#/components/schemas/AdimsContent_campaign_content_fr_internalLinkTarget"
+          }
+        }
+      },
+      "AdimsContent_campaign_content" : {
+        "type" : "object",
+        "properties" : {
+          "fr" : {
+            "$ref" : "#/components/schemas/AdimsContent_campaign_content_fr"
+          }
+        }
+      },
+      "AdimsContent_campaign" : {
+        "type" : "object",
+        "properties" : {
+          "content" : {
+            "$ref" : "#/components/schemas/AdimsContent_campaign_content"
+          }
+        }
+      },
+      "AdimHomepageContent_campaign_content_fr" : {
+        "type" : "object",
+        "properties" : {
+          "description" : {
+            "type" : "string"
+          },
+          "linkUrl" : {
+            "type" : "string",
+            "format" : "uri"
+          },
+          "internalLinkTarget" : {
+            "$ref" : "#/components/schemas/AdimsContent_campaign_content_fr_internalLinkTarget"
+          }
+        }
+      },
+      "AdimHomepageContent_campaign_content" : {
+        "type" : "object",
+        "properties" : {
+          "fr" : {
+            "$ref" : "#/components/schemas/AdimHomepageContent_campaign_content_fr"
+          }
+        }
+      },
+      "AdimHomepageContent_campaign" : {
+        "type" : "object",
+        "properties" : {
+          "content" : {
+            "$ref" : "#/components/schemas/AdimHomepageContent_campaign_content"
+          }
+        }
+      },
+      "AdFocusHomepageContent_campaign_content_fr" : {
+        "type" : "object",
+        "properties" : {
+          "linkUrl" : {
+            "type" : "string",
+            "format" : "uri"
+          },
+          "internalLinkTarget" : {
+            "$ref" : "#/components/schemas/AdimsContent_campaign_content_fr_internalLinkTarget"
+          }
+        }
+      },
+      "AdFocusHomepageContent_campaign_content" : {
+        "type" : "object",
+        "properties" : {
+          "fr" : {
+            "$ref" : "#/components/schemas/AdFocusHomepageContent_campaign_content_fr"
+          }
+        }
+      },
+      "AdFocusHomepageContent_campaign" : {
+        "type" : "object",
+        "properties" : {
+          "content" : {
+            "$ref" : "#/components/schemas/AdFocusHomepageContent_campaign_content"
+          }
+        }
+      },
+      "AdMaxContent_campaign_content_fr_picture" : {
+        "type" : "object",
+        "properties" : {
+          "url" : {
+            "type" : "string",
+            "format" : "uri"
+          },
+          "altText" : {
+            "type" : "string",
+            "example" : "alternate text"
+          }
+        }
+      },
+      "AdMaxContent_campaign_content_fr" : {
+        "type" : "object",
+        "properties" : {
+          "picture" : {
+            "$ref" : "#/components/schemas/AdMaxContent_campaign_content_fr_picture"
+          },
+          "title" : {
+            "type" : "string",
+            "example" : "The title of the advertisement"
+          },
+          "callToActionText" : {
+            "type" : "string",
+            "example" : "Click here for more information."
+          },
+          "backgroundColor" : {
+            "type" : "string",
+            "description" : "The color of the background of the animation",
+            "example" : "#FFFFFF"
+          },
+          "textColor" : {
+            "type" : "string",
+            "description" : "The color of the text used in the animation",
+            "example" : "#000000"
+          },
+          "linkUrl" : {
+            "type" : "string",
+            "format" : "uri"
+          },
+          "internalLinkTarget" : {
+            "$ref" : "#/components/schemas/AdimsContent_campaign_content_fr_internalLinkTarget"
+          }
+        }
+      },
+      "AdMaxContent_campaign_content" : {
+        "type" : "object",
+        "properties" : {
+          "fr" : {
+            "$ref" : "#/components/schemas/AdMaxContent_campaign_content_fr"
+          }
+        }
+      },
+      "AdMaxContent_campaign" : {
+        "type" : "object",
+        "properties" : {
+          "content" : {
+            "$ref" : "#/components/schemas/AdMaxContent_campaign_content"
+          }
+        }
+      }
+    },
+    "parameters" : {
+      "accept-language" : {
+        "name" : "Accept-Language",
+        "in" : "header",
+        "description" : "Accept-Language: fr, be or nl. Default if not provided is en",
+        "required" : false,
+        "style" : "simple",
+        "explode" : false,
+        "schema" : {
+          "$ref" : "#/x-enums/AcceptedLanguages"
+        }
+      }
+    }
+  },
+  "x-enums" : {
+    "AcceptedLanguages" : {
+      "type" : "string",
+      "enum" : [ "fr", "en", "nl" ]
+    },
+    "CommonErrorCodes-400" : {
+      "type" : "string",
+      "enum" : [ "UNRECOGNIZED_PARAMETER", "MISSING_MANDATORY_PARAMETER", "INCORRECT_BODY" ]
+    },
+    "CommonErrorCodes-415" : {
+      "type" : "string",
+      "enum" : [ "UNSUPPORTED_MEDIA_TYPE", "UNSUPPORTED_ACCEPT_HEADER", "UNSUPPORTED_CONTENT_TYPE_HEADER" ]
+    },
+    "Segments" : {
+      "type" : "string",
+      "enum" : [ "RESIDENTIAL", "BUSINESS", "HOLIDAYS", "PRESTIGE" ]
+    },
+    "SearchContext" : {
+      "type" : "string",
+      "enum" : [ "APPARTMENT", "APPARTMENT_GROUP", "COMMERCIAL", "GARAGE", "HOUSE", "HOUSE_GROUP", "INDUSTRY", "LAND", "OFFICE", "TENEMENT_BUILDING", "OTHER" ]
+    },
+    "AdimTypes" : {
+      "type" : "string",
+      "enum" : [ "NORMAL", "XL", "ON_THE_HOMEPAGE" ]
+    },
+    "AdvertisementInternalLinkTargets" : {
+      "type" : "string",
+      "enum" : [ "CLASSIFIED", "CUSTOMER", "GROUP" ]
+    },
+    "DisplayContexts" : {
+      "type" : "string",
+      "enum" : [ "CLASSIFIED_PAGE", "CUSTOMER_PAGE", "RESULT_LIST", "MAP", "HOMEPAGE" ]
+    },
+    "Regions" : {
+      "type" : "string",
+      "enum" : [ "BRUSSELS", "FLANDERS", "WALLONIE", "ABROAD" ]
+    }
+  },
+  "x-comments" : {
+    "DateInfo" : {
+      "string" : "This is a date in ISO 8601 format of YYYY-MM-DDThh:mm:ssZ in UTC time. ex: 2014-01-27T00:40:57.165"
+    }
+  },
+  "x-maskedModels" : {
+    "CommonErrors-400" : {
+      "type" : "object",
+      "properties" : {
+        "errorCode" : {
+          "$ref" : "#/x-enums/CommonErrorCodes-400"
+        },
+        "errorDescription" : {
+          "type" : "string",
+          "description" : "Error message",
+          "example" : "Unrecognized parameter"
+        }
+      }
+    },
+    "CommonErrors-415" : {
+      "type" : "object",
+      "properties" : {
+        "errorCode" : {
+          "$ref" : "#/x-enums/CommonErrorCodes-415"
+        },
+        "errorDescription" : {
+          "type" : "string",
+          "description" : "Error message",
+          "example" : "Unsupported media type"
+        }
+      }
+    },
+    "AdvertisementCampaignContentResponses" : {
+      "CREATED" : {
+        "type" : "object",
+        "properties" : {
+          "campaignId" : {
+            "type" : "string",
+            "example" : 2698109
+          }
+        }
+      },
+      "BADREQUEST" : {
+        "type" : "array",
+        "items" : {
+          "type" : "object",
+          "properties" : {
+            "error" : {
+              "type" : "object",
+              "properties" : {
+                "type" : {
+                  "type" : "string",
+                  "example" : "MISSING_CAMPAIGN_ID",
+                  "description" : "Type of the error. Ex: MISSING_CAMPAIGN_ID"
+                },
+                "description" : {
+                  "type" : "string",
+                  "example" : "campaign.id must be set",
+                  "description" : "Description of the error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "FORBIDDEN" : {
+        "type" : "object",
+        "properties" : {
+          "http_status_code" : {
+            "type" : "string",
+            "example" : 403,
+            "description" : "Status code"
+          },
+          "message" : {
+            "type" : "string",
+            "example" : "API Key is not valid or is expired / revoked.",
+            "description" : "Description of the error"
+          }
+        }
+      },
+      "NOT_FOUND" : {
+        "type" : "object",
+        "properties" : {
+          "errorCode" : {
+            "type" : "string",
+            "example" : "CAMPAIGN_NOT_FOUND",
+            "description" : "CAMPAIGN_NOT_FOUND"
+          },
+          "errorDescription" : {
+            "type" : "string",
+            "description" : "Description of the error",
+            "example" : "No campaign could be found"
+          }
+        }
+      },
+      "UNAUTHORIZED" : {
+        "type" : "object",
+        "properties" : {
+          "error" : {
+            "type" : "object",
+            "properties" : {
+              "type" : {
+                "type" : "string",
+                "example" : "INVALID_OAUTH2_TOKEN",
+                "description" : "Type of the error. Ex: INVALID_OAUTH2_TOKEN"
+              },
+              "description" : {
+                "type" : "string",
+                "description" : "Description of the error",
+                "example" : "Incorrect Oauth2 token"
+              }
+            }
+          }
+        }
+      }
+    },
+    "Adim" : {
+      "type" : "object",
+      "description" : "Ad to display along search results",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "description" : "Ad identifier",
+          "x-oldKey" : "adimId"
+        },
+        "imageUrl" : {
+          "type" : "string",
+          "description" : "URI pointing to the ad image"
+        },
+        "customerId" : {
+          "type" : "integer",
+          "description" : "Ad customer identifier"
+        },
+        "title" : {
+          "type" : "string",
+          "description" : "Small text defining the ad as provided by the customer"
+        }
+      }
+    },
+    "AdimTypesArray" : {
+      "type" : "array",
+      "items" : {
+        "schema" : {
+          "$ref" : "#/x-enums/AdimTypes"
+        }
+      }
+    }
+  }
+}
