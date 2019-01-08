@@ -8,7 +8,8 @@ phases:
      - echo "pre_build step"
  build:
    commands:
-     - aws s3 sync --delete . "s3://sandbox-apidoc-iwb.s3-eu-west-1.amazonaws.com"
+     - echo "build step"
+     # - aws s3 sync --delete . "s3://sandbox-apidoc-iwb.s3-eu-west-1.amazonaws.com"
  post_build:
    commands:
      - echo "post_build step"
