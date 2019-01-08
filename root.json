@@ -1,0 +1,29 @@
+{
+  "openapi" : "3.0.0",
+  "servers" : [ {
+    "url" : "https://testapigw.immoweb.be/",
+    "description" : "APIGW test server"
+  } ],
+  "info" : {
+    "version" : "2.0",
+    "title" : "Immoweb API V2",
+    "description" : "This describes second version of Immoweb API",
+    "contact" : {
+      "email" : "info@immoweb.be"
+    },
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "paths" : {
+    "$ref" : "https://s3-eu-west-1.amazonaws.com/sandbox-apidoc-iwb/advertisements/2.0.json#/paths"
+  },
+  "components" : {
+    "schemas" : {
+      "Advertisements" : {
+        "$ref" : "https://s3-eu-west-1.amazonaws.com/sandbox-apidoc-iwb/advertisements/2.0.json#/components/schemas/Advertisements"
+      }
+    }
+  }
+}
