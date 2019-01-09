@@ -23,7 +23,7 @@
   "components" : {
     "schemas" : {
       "Advertisements" : {
-        "$ref" : "https://s3-eu-west-1.amazonaws.com/sandbox-apidoc-iwb/advertisements/2.0.json#/components/schemas/Advertisements"
+        "$ref" : "http://sandbox-apidoc-iwb.s3-website-eu-west-1.amazonaws.com/advertisements/2.0.json#/components/schemas/Advertisements"
       }
     }
   }
