@@ -1,0 +1,3 @@
+  "/advertisements" : {
+    "$ref" : "http://sandbox-apidoc-iwb.s3-website-eu-west-1.amazonaws.com/advertisements/2.0.json#/paths"
+  },
