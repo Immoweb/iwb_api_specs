@@ -17,8 +17,8 @@
     }
   },
   "paths" : {
-    "$ref" : "https://s3-eu-west-1.amazonaws.com/sandbox-apidoc-iwb/advertisements/2.0.json#/paths",
-    "$ref" : "https://s3-eu-west-1.amazonaws.com/sandbox-apidoc-iwb/old/full.json#/paths"
+    "$ref" : "http://sandbox-apidoc-iwb.s3-website-eu-west-1.amazonaws.com/advertisements/2.0.json#/paths",
+    "$ref" : "http://sandbox-apidoc-iwb.s3-website-eu-west-1.amazonaws.com/old/full.json#/paths"
   },
   "components" : {
     "schemas" : {
