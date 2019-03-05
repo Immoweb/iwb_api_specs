@@ -1,7 +1,7 @@
- "/advertisements" : {
-    "$ref" : "http://sandbox-apidoc-iwb.s3-website-eu-west-1.amazonaws.com/advertisements/2.0.json#/paths"
+"/advertisements" : {
+  "$ref" : "http://sandbox-apidoc-iwb.s3-website-eu-west-1.amazonaws.com/advertisements/2.0.json#/paths"
  },
 "/autocomplete" : {
-    "$ref" : "http://sandbox-apidoc-iwb.s3-website-eu-west-1.amazonaws.com/autocomplete/1.0.json#/paths"
- }
+  "$ref" : "http://sandbox-apidoc-iwb.s3-website-eu-west-1.amazonaws.com/autocomplete/1.0.json#/paths"
+}
 

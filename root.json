@@ -21,7 +21,7 @@
   },
   "components" : {
     "schemas" : {
-        "$ref" : "http://sandbox-apidoc-iwb.s3-website-eu-west-1.amazonaws.com/shemas.json"
+      "$ref" : "http://sandbox-apidoc-iwb.s3-website-eu-west-1.amazonaws.com/shemas.json"
     }
   }
 }
