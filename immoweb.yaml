@@ -2160,6 +2160,7 @@ x-maskedModels:
             type: boolean
             x-oldKey: flags.annuity
           hasIw360Media:
+            type: boolean
           orderingScores:
             type: object
             properties:
