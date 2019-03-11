@@ -1,0 +1,1947 @@
+openapi: 3.0.0
+info:
+  version: '1.0'
+  title: 'Immoweb Users API'
+  description: 'This describes first version of Immoweb Users API'
+  x-logo:
+    url: "users/media/users.png"
+    backgroundColor: "#FFFFFF"
+    altText: "Immoweb Users API Logo"
+servers:
+  - url: 'https://testapigw.immoweb.be/'
+    description: APIGW test server
+tags:
+  - name: Users
+    description: APIs relating to resources protected by user authentication
+  - name: Contact
+    description: APIs relating to resources protected by user authentication
+  - name: Saved Searches
+    description: APIs relating to resources protected by user authentication
+  - name: Saved Classifieds
+    description: APIs relating to resources protected by user authentication
+  - name: Subscriptions
+    description: APIs relating to resources protected by user authentication
+
+x-enums:
+  AcceptedLanguages:
+    type: string
+    enum:
+      - fr
+      - en
+      - nl
+    default: 'en'
+  CommonErrorCodes-400:
+    type: string
+    enum:
+      - UNRECOGNIZED_PARAMETER
+      - MISSING_MANDATORY_PARAMETER
+      - INCORRECT_BODY
+  CommonErrorCodes-415:
+    type: string
+    enum:
+      - UNSUPPORTED_MEDIA_TYPE    
+      - UNSUPPORTED_ACCEPT_HEADER
+      - UNSUPPORTED_CONTENT_TYPE_HEADER
+      
+  ContactEmailSources:
+    type: string
+    enum:
+    - FIND_AN_AGENT
+    - ESTIMATE_MY_PROPERTY
+  ContactInfoUsages:
+    type: string
+    enum:
+      - BUY
+      - RENT
+      - REAL_ESTATE_PROJECT
+      - DEFAULT
+  Countries:
+    type: string
+    enum:
+      - AE
+      - AL
+      - AM
+      - AN
+      - AR
+      - AT
+      - AU
+      - AZ
+      - BA
+      - BD
+      - BE
+      - BG
+      - BR
+      - BW
+      - BY
+      - BZ
+      - CA
+      - CD
+      - CH
+      - CI
+      - CL
+      - CN
+      - CR
+      - CV
+      - CY
+      - CZ
+      - DE
+      - DK
+      - DO
+      - DZ
+      - EE
+      - EG
+      - ES
+      - FI
+      - FR
+      - GB
+      - GE
+      - GH
+      - GR
+      - HK
+      - HR
+      - HU
+      - ID
+      - IE
+      - IL
+      - IN
+      - IT
+      - JO
+      - JP
+      - KE
+      - KG
+      - KR
+      - KZ
+      - LB
+      - LI
+      - LT
+      - LU
+      - LV
+      - MA
+      - MC
+      - MD
+      - ME
+      - MG
+      - MK
+      - MT
+      - MU
+      - MX
+      - NA
+      - NL
+      - 'NO'
+      - PA
+      - PE
+      - PL
+      - PT
+      - PY
+      - RO
+      - RS
+      - RU
+      - SE
+      - SG
+      - SI
+      - SK
+      - SN
+      - TH
+      - TJ
+      - TM
+      - TN
+      - TR
+      - TW
+      - TZ
+      - UA
+      - US
+      - UZ
+      - VE
+      - ZA
+  DaysOfTheWeek:
+    type: string
+    enum:
+      - MONDAY
+      - TUESDAY
+      - WEDNESDAY
+      - THURSDAY
+      - FRIDAY
+      - SATURDAY
+      - SUNDAY
+  DomainCodes:
+    type: string
+    enum:
+    - BUILDING_RENOVATION
+    - ENERGY
+    - INSURANCE_FINANCE
+    - SERVICES
+    - VACATION
+
+  Gender:
+    type: string
+    enum:
+      - FEMALE
+      - MALE
+  NonceStatuses:
+    type: string
+    enum:
+      - VALID
+      - USED
+  Regions:
+    type: string
+    enum:
+      - BRUSSELS
+      - FLANDERS
+      - WALLONIE
+      - ABROAD
+  TopicCodes:
+    type: string
+    enum:
+      - BATHROOM
+      - CARPENTRY
+
+x-comments:
+  DateInfo:
+    string: >-
+      This is a date in ISO 8601 format of YYYY-MM-DDThh:mm:ssZ in UTC time. ex:
+      2014-01-27T00:40:57.165
+x-maskedModels:
+  CommonErrors-400:
+    type: object
+    properties:
+      errorCode:
+        $ref: '#/x-enums/CommonErrorCodes-400'
+      errorDescription:
+        type: string
+        description: Error message
+        example: Unrecognized parameter
+  CommonErrors-415:
+    type: object
+    properties:
+      errorCode:
+        $ref: '#/x-enums/CommonErrorCodes-415'
+      errorDescription:
+        type: string
+        description: Error message
+        example: Unsupppoerted media type
+  ContactEmail:
+    type: object
+    properties:
+      from:
+        type: object
+        properties:
+          firstName:
+            type: string
+          lastName:
+            type: string
+          email:
+            type: string
+      to:
+        type: object
+        properties:
+          emails:
+            type: array
+            items:
+              type: string
+              example: dest1@immoweb.be
+      message:
+        type: object
+        properties:
+          subject:
+            type: string
+          body: 
+            type: string
+      callbackUrl:
+        type: string
+        description: url to call back after email verification to verify the user
+        example: http://myFront.immoweb.be/contact/email/validation
+      source:
+        $ref: '#/x-enums/ContactEmailSources'
+        
+      additionalFields:
+        type: object
+        description: additional fields specific to certain source to generate personnalized email with enriched templates
+        properties:
+          address:
+            type: object
+            properties:
+              street:
+                type: string
+              postalCode:
+                type: string
+              locality:
+                type: string
+          phoneNumber:
+            type: string
+  UserContactEmail:
+    type: object
+    properties:
+      from:
+        type: object
+        properties:
+          firstName:
+            type: string
+          lastName:
+            type: string
+          email:
+            type: string
+      to:
+        type: object
+        properties:
+          emails:
+            type: array
+            items:
+              type: string
+              example: dest1@immoweb.be
+      message:
+        type: object
+        properties:
+          subject:
+            type: string
+          body: 
+            type: string
+      source:
+        $ref: '#/x-enums/ContactEmailSources'
+        
+      additionalFields:
+        type: object
+        description: additional fields specific to certain source to generate personnalized email with enriched templates
+        properties:
+          address:
+            type: object
+            properties:
+              street:
+                type: string
+              postalCode:
+                type: string
+              locality:
+                type: string
+          phoneNumber:
+            type: string
+  ContactEmailValidation:
+    type: object
+    properties:
+      token:
+        type: string
+        example: "TOKEN_RECEIVED_VIA_EMAIL"
+      
+  FlagsAndStatistics:
+    type: object
+    properties:
+      flags:
+        type: object
+        properties:
+          isAPublicSale:
+            type: boolean
+            x-oldKey: flags.publicSale
+          isANewlyPublishedClassified:
+            type: boolean
+            x-oldKey: flags.new
+          isAPropertyWithNewPrice:
+            type: boolean
+            x-oldKey: flags.newPrice
+          isNewlyBuilt:
+            type: boolean
+            x-oldKey: flags.newProject
+          isANotarySale:
+            type: boolean
+            x-oldKey: flags.notaries
+          isALifeAnnuitySale:
+            type: boolean
+            x-oldKey: flags.annuity
+          hasIw360Media:
+            type: boolean
+          orderingScores:
+            type: object
+            properties:
+              adQuality:
+                type: number
+                x-oldKey: flags.adQualityScore
+              date:
+                type: string
+                x-oldKey: flags.dateOrderingScore
+              default:
+                type: integer
+                x-oldKey: flags.defaultOrderingScore
+              price:
+                type: number
+                x-oldKey: flags.priceOrderingScore
+              priceSqm:
+                type: number
+                x-oldKey: flags.pricem2orderScore
+      statistics:
+        type: object
+        properties:
+          bookmarkCount:
+            type: integer
+            x-oldKey: bookmarksCount
+          userBookmarkData:
+            type: object
+            description: >-
+              Current user bookmark data. Whole section is not present for
+              anonymous calls
+            properties:
+              alertPrice:
+                description: >-
+                  a price which will trigger sending of mails of property price
+                  goes below this one
+                type: number
+                x-oldKey: userBookmarkData.alertPrice
+              creationDate:
+                description: >-
+                  the date when the bookmark was created by the current user
+                  This is a date in ISO 8601 format of YYYY-MM-DDThh:mm:ssZ in
+                  UTC time. ex: 2014-01-27T00:40:57.165Z
+                type: string
+                format: date-time
+                x-oldKey: userBookmarkData.createdDate
+              description:
+                description: User's comment about the saved property
+                type: string
+                x-oldKey: userBookmarkData.description
+              isAlertEmailSet:
+                description: Have user requested a price alert email
+                type: boolean
+                x-oldKey: userBookmarkData.sendEmail
+              rating:
+                description: Rating given to the saved property
+                type: number
+                minimum: 0
+                maximum: 4
+                x-oldKey: userBookmarkData.rating
+              wasOwnerContacted:
+                description: Have user contacted the advertiser
+                type: boolean
+                x-oldKey: userBookmarkData.contactOwner
+              wasPropertyVisited:
+                description: Have user visited the property
+                type: boolean
+                x-oldKey: userBookmarkData.propertyVisited
+          viewCount:
+            type: integer
+            x-oldKey: viewsCount
+
+  OauthTokenRequest:
+    properties:
+      grant_type:
+        type: string
+        example: password
+      client_id:
+        type: string
+        example: iw_front
+      client_secret:
+        type: string
+      username:
+        type: string
+        example: myUserName
+      password:
+        type: string
+        example: myPassword
+      scope:
+        type: string
+        example: openid 
+  OauthTokenResponse:
+    type: object
+    properties:
+      access_token:
+        type: string
+        example: 3bdc2277-35e4-473e-8b42-06df19edf032
+      token_type:
+        type: string
+        example: bearer
+      refresh_token: 
+        type: string
+        example: d67d6e7b-b91b-44d7-906b-6d3a1a052cc9
+      expires_in:
+        type: integer
+        example: 7199
+      scope: 
+        type: string
+        example: openid
+      id_token:
+        type: string
+        description: Token to provide to api to authenticate subsequent calls
+        example: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyNjk4MTA5IiwiYXVkIjoiaXdfZnJvbnQiLCJmaXJzdE5hbWUiOiJ0ZXN0IiwibGFzdE5hbWUiOiJ0ZXN0IiwibWFpbCI6ImVtbWFudWVsLmxlcm95QGF4YS5iZSIsImlzcyI6Iml3ZWJfZGIiLCJleHAiOjE1MTY3Mzk3MDMsImlhdCI6MTUxNjcyNTMwMywidXNlcklkIjoiMjY5ODEwOSJ9.RiYg9t148XFfpvDKARFlgDiw0pBQ4LRy4Fz1iGoUNdp5MaGqGayB7NKhN7KIlIsN_tj1xS6Yf5AkOiOIQ60T8T7gTiyc1orPV2U6jILCMYFEvOSOzxPEQCxHJm3f70CxKquvjFQAxysZn5W_MhTIrcIYCr9isPaMylIcVMioTqeg2VMwEmNo0pNzfp9PKRTpS3ub5zCbYMw_nDbc6_anoYjmpJKx8js11-nvA66rW--jxl8Cvb1ORRl9K678s-rsfqPf8Gl2NoQ8OTRn2HZGPIPJ4JxVXcs-Enzt9ittjvoOjbOVArVv9y-oQM7ATm-vD_SWoBmhzPHL-VevF0yngA
+    
+  SavedSearchBody:
+    type: object
+    properties:
+      transactionTypes:
+        type: array
+        items:
+          $ref: '../domain.yaml#/x-enums/TransactionTypes'
+      propertyTypes:
+        type: array
+        items:
+          $ref: '../domain.yaml#/x-enums/PropertyTypes'
+      propertySubtypes:
+        type: array
+        items:
+          $ref: '../domain.yaml#/x-enums/PropertySubtypes'
+      postalCodes:
+        type: array
+        items:
+          type: string
+      countries:
+        type: array
+        items:
+          $ref: '../domain.yaml#/x-enums/Countries'
+      minRoomCount:
+        type: integer
+      maxRoomCount:
+        type: integer
+      minSurface:
+        type: integer
+      maxSurface:
+        type: integer
+      priceType:
+        required: true
+        $ref: '../domain.yaml#/x-enums/PriceTypes'
+      minParkingPlaces:
+        type: integer
+      maxParkingPlaces:
+        type: integer
+      hasAReceptionDesk:
+        type: boolean
+      hasTerraceOrGarden:
+        type: boolean
+      buildingConditions:
+        type: array
+        items:
+          $ref: '../domain.yaml#/x-enums/BuildingConditions'
+      hasDisabledAccess: 
+        type: boolean
+      hasLift:
+        type: boolean
+      isAPublicSale:
+        type: boolean
+      isANewlyPublishedClassified:
+        type: boolean
+      isALifeAnnuitySale:
+        type: boolean
+      isFurnished:
+        type: boolean
+      isAHolidayRental:
+        type: boolean
+      isAnInvestmentProperty:
+        type: boolean
+      minLandSurface:
+        type: integer
+      maxLandSurface:
+        type: integer
+      minPriceOfBusiness:
+        type: number
+      maxPriceOfBusiness:
+        type: number
+      isAWorkSpaceProperty:
+        type: boolean
+      minAvailableSurface:
+        type: integer
+      maxAvailableSurface:
+        type: integer
+      minShowroomSurface:
+        type: integer
+      maxShowroomSurface:
+        type: integer
+      minKitchenSurface:
+        type: integer
+      maxKitchenSurface:
+        type: integer
+      minFacadeCount:
+        type: integer
+      maxFacadeCount:
+        type: integer
+      minAccessDoorCount:
+        type: integer
+      maxAccessDoorCount:
+        type: integer
+      minLoadingBayCount:
+        type: integer
+      maxLoadingBayCount:
+        type: integer
+      maxDaysSinceLastModification:
+        type: integer
+
+  SavedSearches:
+    type: array
+    items:
+      $ref: '#/components/schemas/SavedSearch'
+  
+  Subscriptions:
+    type: object
+    properties:
+      version:
+        type: string
+        example: '1.0'
+      topics:
+        type: array
+        items:
+          type: object
+          properties:
+            topicCode:
+              type: string
+              example: communications_immoweb_partners
+            subtopics:
+              type: array
+              items:
+                type: object
+                properties:
+                  topicCode:
+                    type: string
+                    example: consent_agree_partners_electronic_communications
+                  subscribed:
+                    type: boolean
+                      
+  User-no-id:
+      description: Information regarding a user 
+      type: object
+      properties:
+        account:
+          type: object
+          properties:
+            acceptsHtmlEmails:
+              type: boolean
+            lastConnection:
+              type: string
+              example: "2018-01-23T08:51:52.753+01:00"
+            lastLogin:
+              type: string  
+              example: "2018-01-19T14:41:06.107+01:00" 
+            connectionOrigin:
+              type: string
+        personal:
+          type: object
+          properties:
+            gender:
+              $ref: '#/x-enums/Gender'
+            lastName:
+              type: string
+            firstName:
+              type: string
+            language:
+              type: string
+              example: "en"
+        address:
+          type: object
+          properties:
+            country:
+              type: string
+            locality:
+              type: string
+              example: Brussels City
+            postalcode:
+              type: string
+        contact:
+          properties:
+            email:
+              type: string
+              example: name.lastname@immoweb.be
+            phoneCallingTime:
+              type: string
+            mobileCallingTime:
+              type: string
+        business:
+          type: object
+        newslettersPreferences:
+          type: object
+          properties:
+            acceptTermsAndConditions:
+              type: boolean
+            acknowledgeInternalPrivacy:
+              type: boolean
+            acknowledgeExternalPrivacy:
+              type: boolean
+            savedEstatesNotifications:
+              type: boolean
+            savedSearchesNotifications:
+              type: boolean
+        userInterests:
+          type: array
+          items:
+            type: object
+            properties:
+              domainCode:
+                $ref: '#/x-enums/DomainCodes'
+              topicCode:
+                $ref: '#/x-enums/TopicCodes'
+              selected:
+                type: boolean
+              label:
+                type: string
+                example: "Bathroom"
+  UserFeedback:
+    type: object
+  UserResponses:
+    NOT_FOUND:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+              example: USER_NOT_FOUND
+              description: USER_NOT_FOUND
+            description:
+              type: string
+              description: Description of the error
+              example: No user could be found
+    UNAUTHORIZED:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+              example: INVALID_OAUTH2_TOKEN
+              description: 'Type of the error. Ex: INVALID_OAUTH2_TOKEN'
+            description:
+              type: string
+              description: Description of the error
+              example: Incorrect Oauth2 token
+
+paths:
+  '/contact/email':
+    post:
+      tags:
+        - Contact
+      summary: Send a contact form via email
+      security:
+        - apikey_contact: []
+        - user_password: [user]
+      parameters:
+        - name: Accept-Language
+          in: header
+          description: 'Accept-Language: fr, en or nl'
+          schema:
+            $ref: '#/x-enums/AcceptedLanguages'
+        - name: Authorization
+          in: header
+          description: 'Beader + jwt'
+          schema:
+            type: string
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            enum:
+            - 'application/vnd.be.immoweb.contact.email.v1+json'
+            - 'application/vnd.be.immoweb.user.contact.email.v1+json'
+      requestBody:
+        content:
+          'application/vnd.be.immoweb.contact.email.v1+json':
+            schema:
+              $ref: '#/x-maskedModels/ContactEmail'
+          'application/vnd.be.immoweb.user.contact.email.v1+json':
+            schema:
+              $ref: '#/x-maskedModels/UserContactEmail'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Request is malformed
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-400'
+        '415':
+          description: Unsupported media type
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-415'
+  '/contact/email/validation':
+    post:
+      tags:
+        - Contact
+      summary: Send a confirmation after the email was validated
+      security:
+        - apikey_contact: []
+      parameters:
+        - name: Accept-Language
+          in: header
+          description: 'Accept-Language: fr, en or nl'
+          schema:
+            $ref: '#/x-enums/AcceptedLanguages'
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            enum:
+            - 'application/vnd.be.immoweb.contact.email.validation.v1+json'
+      requestBody:
+        content:
+          'application/vnd.be.immoweb.contact.email.validation.v1+json':
+            schema:
+              $ref: '#/x-maskedModels/ContactEmailValidation'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Request is malformed
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-400'
+        '415':
+          description: Unsupported media type
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-415'
+             
+  '/users/oauth/token':
+    post:
+      servers:
+        - url: 'https://connect-test.immoweb.be/'
+          description: Oauth server
+      tags:
+        - OAuth
+      summary: Provide Authentication token for IW users after checking credentials
+      requestBody:
+        content:
+          'application/x-www-form-urlencoded':
+            schema:
+              $ref: '#/x-maskedModels/OauthTokenRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/OauthTokenResponse'
+        '400':
+          description: Access is not authorized. Check Oauth2 token
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/UserResponses/UNAUTHORIZED'
+
+  '/users':
+    post:
+      tags:
+        - Users
+      summary: Creates a user based on body
+      description: Create a user based on body
+      security:
+        - apikey_users: []
+      parameters:
+        - name : Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            enum:
+            - 'application/vnd.be.immoweb.user.v1.0+json'
+      requestBody: 
+        content:
+          'application/vnd.be.immoweb.user.v1.0+json':
+            schema:
+              $ref: '#/x-maskedModels/User-no-id'
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/vnd.be.immoweb.user.v1.0+json':
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Request is malformed
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-400'
+        '415':
+          description: Unsupported media type
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-415'
+        '401':
+          description: Access is not authorized. Check api key
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/UserResponses/UNAUTHORIZED'
+  '/users/current':
+    get:
+      tags:
+        - Users
+      summary: Retrieves a user based on current oauth token
+      description: Retrieves a user based on current oauth token
+      security:
+        - apikey_users: []
+        - user_password: [user]
+      parameters:
+        - name : Accept
+          in: header
+          required: true
+          schema:
+            type: string
+            enum:
+            - 'application/vnd.be.immoweb.user.v1.0+json'
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/vnd.be.immoweb.user.v1.0+json':
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Request is malformed
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-400'
+        '415':
+          description: Unsupported media type
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-415'
+        '401':
+          description: Access is not authorized. Check Oauth2 token
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/UserResponses/UNAUTHORIZED'
+    put:
+      tags:
+        - Users
+      summary: Updates current user based on body
+      description: Updates current user based on body
+      security:
+        - apikey_users: []
+        - user_password: [user]
+      parameters:
+        - name : Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            enum:
+            - 'application/vnd.be.immoweb.user.v1.0+json'
+      requestBody:
+        content:
+          'application/vnd.be.immoweb.user.v1.0+json':
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Request is malformed
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-400'
+        '415':
+          description: Unsupported media type
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-415'
+        '401':
+          description: Access is not authorized. Check api key
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/UserResponses/UNAUTHORIZED'
+    delete:
+      tags:
+        - Users
+      security:
+        - apikey_users: []
+        - user_password: [user]
+      summary: Delete current user
+      description: Delete current user
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Request is malformed
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-400'
+        '415':
+          description: Unsupported media type
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-415'
+        '401':
+          description: Access is not authorized. Check api key
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/UserResponses/UNAUTHORIZED'
+  '/users/current/contact/email':
+    post:
+      tags:
+        - Contact
+      summary: Send a contact form via email
+      security:
+        - user-password: [user]
+      parameters:
+        - name: Accept-Language
+          in: header
+          description: 'Accept-Language: fr, en or nl'
+          schema:
+            $ref: '#/x-enums/AcceptedLanguages'
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            enum:
+            - 'application/vnd.be.immoweb.contact.email.v1+json'
+      requestBody:
+        content:
+          'application/vnd.be.immoweb.contact.email.v1+json':
+            schema:
+              $ref: '#/x-maskedModels/ContactEmail'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Request is malformed
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-400'
+        '415':
+          description: Unsupported media type
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-415'
+  
+  '/users/current/saved-searches':
+    get:
+      tags:
+        - Saved Searches
+      summary: Retriev user saved searches
+      security:
+        - user-password: [user]
+      parameters:
+        - name: Accept-Language
+          in: header
+          description: 'Accept-Language: fr, en or nl'
+          schema:
+            $ref: '#/x-enums/AcceptedLanguages'
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            enum:
+            - 'application/vnd.be.immoweb.user.saved-searches.v1.0+json'
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/vnd.be.immoweb.user.saved-searches.v1.0+json':
+              schema:
+                $ref: '#/x-maskedModels/SavedSearches'
+        '400':
+          description: Request is malformed
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-400'
+        '415':
+          description: Unsupported media type
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-415'
+  '/users/current/saved-searches/{id}':
+    put:
+      tags:
+        - Saved Searches
+      summary: Retrieve user saved search by id
+      security:
+        - user-password: [user]
+      parameters:
+        - name: Accept-Language
+          in: header
+          description: 'Accept-Language: fr, en or nl'
+          schema:
+            $ref: '#/x-enums/AcceptedLanguages'
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            enum:
+            - 'application/vnd.be.immoweb.user.saved-searches.v1.0+json'
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          'application/vnd.be.immoweb.user.saved-searches.v1.0+json':
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: 'My Saved search'
+                query:
+                  $ref: '#/x-maskedModels/SavedSearchBody'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Request is malformed
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-400'
+        '415':
+          description: Unsupported media type
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-415'
+    delete:
+      tags:
+        - Saved Searches
+      summary: Delete user saved search by id
+      security:
+        - user-password: [user]
+      parameters:
+        - name: Accept-Language
+          in: header
+          description: 'Accept-Language: fr, en or nl'
+          schema:
+            $ref: '#/x-enums/AcceptedLanguages'
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Request is malformed
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-400'
+        
+  '/users/current/saved-classifieds':
+    get:
+      tags:
+        - Saved Classifieds
+      summary: Retrieve user saved classifieds
+      security:
+        - user-password: [user]
+      parameters:
+        - name: Accept-Language
+          in: header
+          description: 'Accept-Language: fr, en or nl'
+          schema:
+            $ref: '#/x-enums/AcceptedLanguages'
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            enum:
+            - 'application/vnd.be.immoweb.classifieds.v2.0+json'
+            - 'application/vnd.be.immoweb.classifieds.v2.1+json'
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/vnd.be.immoweb.classifieds.v2.0+json':
+              schema:
+                $ref: '../domain.yaml#/x-maskedModels/SearchClassifiedResponseV2'
+            'application/vnd.be.immoweb.classifieds.v2.1+json':
+              schema:
+                $ref: '../domain.yaml#/x-maskedModels/SearchClassifiedResponseV2.1'
+        '400':
+          description: Request is malformed
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-400'
+        '415':
+          description: Unsupported media type
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-415'
+    post:
+      tags:
+        - Saved Classifieds
+      summary: Add classified to the list of saved classifieds for the current user
+      security:
+        - user-password: [user]
+      parameters:
+        - name: Accept-Language
+          in: header
+          description: 'Accept-Language: fr, en or nl'
+          schema:
+            $ref: '#/x-enums/AcceptedLanguages'
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            enum:
+            - 'application/vnd.be.immoweb.user.saved-classifieds.v1.0+json'
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          'application/vnd.be.immoweb.user.saved-classifieds.v1.0+json':
+            schema:
+              type: array
+              items:
+                type: integer
+                description: id of the classified
+                example: 6946146
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Request is malformed
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-400'
+        '415':
+          description: Unsupported media type
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-415'
+    delete:
+      tags:
+        - Saved Classifieds
+      summary: Remove all classified from list of saved classifieds
+      security:
+        - user-password: [user]
+      parameters:
+        - name: Accept-Language
+          in: header
+          description: 'Accept-Language: fr, en or nl'
+          schema:
+            $ref: '#/x-enums/AcceptedLanguages'
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Request is malformed
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-400'
+        '415':
+          description: Unsupported media type
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-415'
+  '/users/current/saved-classifieds/{id}':
+    delete:
+      tags:
+        - Saved Classifieds
+      summary: Delete user saved classified by id
+      security:
+        - user-password: [user]
+      parameters:
+        - name: Accept-Language
+          in: header
+          description: 'Accept-Language: fr, en or nl'
+          schema:
+            $ref: '#/x-enums/AcceptedLanguages'
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Request is malformed
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-400'
+        '415':
+          description: Unsupported media type
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-415'
+  '/users/{userId}/1-0/subscriptions':
+    get:
+      tags:
+        - Subscriptions
+      summary: Redirect link to administration page based on nonce and userId
+      security: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: 'UserId of the user to consider when redirecting to subscriptions management page'
+          schema:
+            type: string
+        - name: nonce
+          in: query
+          required: true
+          description: 'Nonce provided in email link to authorize subscriptions retrieval/modifications'
+          schema:
+            type: string
+        - name: lang
+          in: query
+          required: true
+          schema:
+            $ref: '#/x-enums/AcceptedLanguages'
+      responses:
+        '301':
+          description: redirect link in Location header
+          headers:
+            Location:
+              schema:
+                type: string
+                example: 'https://test.immoweb.be/fr/dashboard?nonce=NONCE&userId=USER_ID'
+            
+        '400':
+          description: Request is malformed
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-400'
+  '/users/{userId}/subscriptions/nonce/{nonce}':
+    get:
+      tags:
+        - Subscriptions
+      summary: Check nonce validity prior to set subscriptions
+      security:
+        - apikey_users: []
+      parameters:
+        - name: Accept
+          in: header
+          required: true
+          schema:
+            type: string
+            enum:
+            - 'application/vnd.be.immoweb.user.subscriptions.nonce.v1.0+json'
+        - name: userId
+          in: path
+          required: true
+          description: 'UserId of the user to consider when checkin nonce validity'
+          schema:
+            type: string
+        - name: nonce
+          in: path
+          required: true
+          description: 'Nonce provided in email link to authorize subscriptions retrieval/modifications'
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK - Nonce is valid if status is set to VALID
+          content:
+            'application/vnd.be.immoweb.user.subscriptions.nonce.v1.0+json':
+              schema:
+                type: object
+                properties:
+                  status:
+                    $ref: '#/x-enums/NonceStatuses'
+                    
+        '404':
+          description: Nonce could not be found
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  errorCode:
+                    type: string
+                    enum:
+                      - NONCE_MICROSERVICE_ERROR
+                  errorDescription:
+                    type: string
+                    example : Nonce NONCE not found
+                
+        '400':
+          description: Request is malformed
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-400'
+        '415':
+          description: Unsupported media type
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-415'
+    put:
+      tags:
+        - Subscriptions
+      summary: Invalidate nonce validity after setting subscriptions
+      security:
+        - apikey_users: []
+      parameters:
+        - name: Accept
+          in: header
+          required: true
+          schema:
+            type: string
+            enum:
+            - 'application/vnd.be.immoweb.user.subscriptions.nonce.v1.0+json'
+        - name: userId
+          in: path
+          required: true
+          description: 'UserId of the user to consider when checkin nonce validity'
+          schema:
+            type: string
+        - name: nonce
+          in: path
+          required: true
+          description: 'Nonce provided in email link to authorize subscriptions retrieval/modifications'
+          schema:
+            type: string
+      requestBody:
+        content:
+          'application/vnd.be.immoweb.user.subscriptions.nonce.v1.0+json':
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                     - USED
+      responses:
+        '200':
+          description: OK - Nonce is invalidated
+          
+        '404':
+          description: Nonce could not be found
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  errorCode:
+                    type: string
+                    enum:
+                      - NONCE_MICROSERVICE_ERROR
+                  errorDescription:
+                    type: string
+                    example : Nonce NONCE not found
+                
+        '400':
+          description: Request is malformed
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-400'
+        '415':
+          description: Unsupported media type
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-415'
+  '/users/new/subscriptions':
+    get:
+      tags:
+        - Subscriptions
+      summary: Get subscription topics for new or unlogged user
+      security:
+        - apikey_users: []
+      parameters:
+        - name: Accept
+          in: header
+          required: true
+          schema:
+            type: string
+            enum:
+            - 'application/vnd.be.immoweb.user.subscriptions.v1.0+json'
+        
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/vnd.be.immoweb.user.subscriptions.v1.0+json':
+              schema:
+                $ref: '#/x-maskedModels/Subscriptions'
+        '400':
+          description: Request is malformed
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-400'
+        '415':
+          description: Unsupported media type
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-415'
+  '/users/current/subscriptions':
+    get:
+      tags:
+        - Subscriptions
+      summary: Get subscription topics for logged-in user
+      security:
+        - apikey_users: []
+        - user_password: [user]
+      parameters:
+        - name: Accept
+          in: header
+          required: true
+          schema:
+            type: string
+            enum:
+            - 'application/vnd.be.immoweb.user.subscriptions.v1.0+json'
+        
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/vnd.be.immoweb.user.subscriptions.v1.0+json':
+              schema:
+                $ref: '#/x-maskedModels/Subscriptions'
+        '400':
+          description: Request is malformed
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-400'
+        '415':
+          description: Unsupported media type
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-415'
+    post:
+      tags:
+        - Subscriptions
+      summary: Post subscription topics for logged-in user
+      security:
+        - apikey_users: []
+        - user_password: [user]
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            enum:
+            - 'application/vnd.be.immoweb.user.subscriptions.v1.0+json'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Request is malformed
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-400'
+        '415':
+          description: Unsupported media type
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-415'
+  '/users/{userId}/subscriptions':
+    post:
+      tags:
+        - Subscriptions
+      summary: Post subscription topics for unlogged user. This call will first check nonce, then save subscriptions, then invalidate nonce
+      security:
+        - apikey_users: []
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            enum:
+            - 'application/vnd.be.immoweb.user.subscriptions.v1.0+json'
+        - name: userId
+          in: path
+          required: true
+          description: 'UserId of the user to consider when checkin nonce validity'
+          schema:
+            type: string
+        - name: nonce
+          in: query
+          required: true
+          description: 'Nonce provided in email link to authorize subscriptions retrieval/modifications'
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Request is malformed
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-400'
+        '401':
+          description: Invalid nonce
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  errorCode:
+                    type: string
+                    enum:
+                      - UNKNOWN_NONCE
+                      - INVALID_NONCE
+                  errorDescription:
+                    type: string
+                    example : Provided nonce could not found
+        '415':
+          description: Unsupported media type
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-415'
+                          
+  '/aggregated-authentication':
+    post:
+      tags:
+        - OAuth
+      security: []
+      requestBody:
+        content:
+          'application/x-www-form-urlencoded':
+            schema:
+              $ref: '#/x-maskedModels/OauthTokenRequest'
+      summary: Log into current and legacy oauth system
+      
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  access_manager:
+                    type: object
+                    properties:
+                      access_token:
+                        type: string
+                        example: 3bdc2277-35e4-473e-8b42-06df19edf032
+                      token_type:
+                        type: string
+                        example: bearer
+                      refresh_token: 
+                        type: string
+                        example: d67d6e7b-b91b-44d7-906b-6d3a1a052cc9
+                      expires_in:
+                        type: integer
+                        example: 7199
+                      scope: 
+                        type: string
+                        example: openid
+                      id_token:
+                        type: string
+                        description: Token to provide to api to authenticate subsequent calls
+                        example: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyNjk4MTA5IiwiYXVkIjoiaXdfZnJvbnQiLCJmaXJzdE5hbWUiOiJ0ZXN0IiwibGFzdE5hbWUiOiJ0ZXN0IiwibWFpbCI6ImVtbWFudWVsLmxlcm95QGF4YS5iZSIsImlzcyI6Iml3ZWJfZGIiLCJleHAiOjE1MTY3Mzk3MDMsImlhdCI6MTUxNjcyNTMwMywidXNlcklkIjoiMjY5ODEwOSJ9.RiYg9t148XFfpvDKARFlgDiw0pBQ4LRy4Fz1iGoUNdp5MaGqGayB7NKhN7KIlIsN_tj1xS6Yf5AkOiOIQ60T8T7gTiyc1orPV2U6jILCMYFEvOSOzxPEQCxHJm3f70CxKquvjFQAxysZn5W_MhTIrcIYCr9isPaMylIcVMioTqeg2VMwEmNo0pNzfp9PKRTpS3ub5zCbYMw_nDbc6_anoYjmpJKx8js11-nvA66rW--jxl8Cvb1ORRl9K678s-rsfqPf8Gl2NoQ8OTRn2HZGPIPJ4JxVXcs-Enzt9ittjvoOjbOVArVv9y-oQM7ATm-vD_SWoBmhzPHL-VevF0yngA
+                  legacy:
+                    type: object
+                    properties:
+                      access_token:
+                        type: string
+                        example: "9e8118ad-d775-48d8-ac7c-1babe890dd45"
+                      token_type:
+                        type: string
+                        example: "bearer"
+                      refresh_token:
+                        type: string
+                        example:  "200258b7-1a68-45c5-8313-9df369b81109"
+                      expires_in:
+                        type: integer
+                        example: 86399
+                      scope:
+                        type: string
+                        example: "read trust"
+                  
+        '400':
+          description: Request is malformed
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-400'
+        '415':
+          description: Unsupported media type
+          content:
+            'application/json':
+              schema:
+                $ref: '#/x-maskedModels/CommonErrors-415'
+        '401':
+          description: Error - Authentication failure
+ 
+  
+externalDocs:
+  description: Find out more about Swagger
+  url: 'http://swagger.io'
+
+components:
+  parameters:
+    accept-language:
+      name: Accept-Language
+      in: header
+      description: 'Accept-Language: fr, be or nl. Default if not provided is en'
+      schema:
+        $ref: '#/x-enums/AcceptedLanguages'
+
+  schemas:
+        
+    Classified-User-V2:
+       properties:
+        id:
+          type: integer
+          x-oldKey: id
+        cluster:
+          $ref: '../domain.yaml#/x-maskedModels/Cluster'
+        customers:
+          type: array
+          items:
+            $ref: '../domain.yaml#/x-maskedModels/Customer'
+        flagsAndStatistics:
+          $ref: '../domain.yaml#/x-maskedModels/FlagsAndStatistics'
+        media:
+          $ref: '../domain.yaml#/x-maskedModels/Media'
+        property:
+          $ref: '../domain.yaml#/x-maskedModels/Property'
+        publication:
+          $ref: '../domain.yaml#/x-maskedModels/Publication'
+        transaction:
+          $ref: '../domain.yaml#/x-maskedModels/Transaction'
+        user:
+          type: object
+          properties:
+            isBookmarked:
+              type: boolean
+            isNew:
+              type: boolean
+    Classified-User-V2.1:
+       properties:
+        id:
+          type: integer
+          x-oldKey: id
+        cluster:
+          $ref: '../domain.yaml#/x-maskedModels/Cluster'
+        customers:
+          type: array
+          items:
+            $ref: '../domain.yaml#/x-maskedModels/CustomerV2.1'
+        flagsAndStatistics:
+          $ref: '../domain.yaml#/x-maskedModels/FlagsAndStatistics'
+        media:
+          $ref: '../domain.yaml#/x-maskedModels/Media'
+        property:
+          $ref: '../domain.yaml#/x-maskedModels/Property'
+        publication:
+          $ref: '../domain.yaml#/x-maskedModels/Publication'
+        transaction:
+          $ref: '../domain.yaml#/x-maskedModels/Transaction'
+        user:
+          type: object
+          properties:
+            isBookmarked:
+              type: boolean
+            isNew:
+              type: boolean        
+        
+    SavedSearch:
+      description: Saved search of user
+      type: object
+      properties:
+        id:
+          type: integer
+        lastModificationDate:
+          type: string
+          description: 'This is a date in ISO 8601 format of YYYY-MM-DDThh:mm'
+          example: "2018-02-16T12:56:03.527+0100"
+        query:
+          $ref: '#/x-maskedModels/SavedSearchBody'
+                  
+    SearchedClassified-User-V2:
+      description: Basic information about a classified returned during search 2
+      type: object
+      properties:
+        id:
+          type: integer
+          x-oldKey: id
+        cluster:
+          $ref: '../domain.yaml#/x-maskedModels/ClusterSearch'
+        customers:
+          type : array
+          items:
+            type: object
+            properties:
+              info:
+                type: object
+                properties:
+                  logoUrl:
+                    type: string
+                    description: agency logo url
+                    x-oldKey: 'results[].agencyLogo'
+        flagsAndStatistics:
+          $ref: '../domain.yaml#/x-maskedModels/SearchResponseFlagsAndStatistics'
+        media:
+          $ref: '../domain.yaml#/x-maskedModels/SearchResponseMedia'      
+        property:
+          $ref: '../domain.yaml#/x-maskedModels/SearchResponseProperty'
+        publication:
+          $ref: '../domain.yaml#/x-maskedModels/SearchResponsePublication'
+        transaction:
+          $ref: '../domain.yaml#/x-maskedModels/SearchResponseTransaction'
+        user:
+          type: object
+          properties:
+            isBookmarked:
+              type: boolean
+    SearchedClassified-User-V2.1:
+      description: Basic information about a classified returned during search 2
+      type: object
+      properties:
+        id:
+          type: integer
+          x-oldKey: id
+        cluster:
+          $ref: '../domain.yaml#/x-maskedModels/ClusterSearch'
+        customers:
+          type : array
+          items:
+            type: object
+            properties:
+              publicInfo:
+                type: object
+                properties:
+                  logoUrl:
+                    type: string
+                    description: agency logo url
+                    x-oldKey: 'results[].agencyLogo'
+        flagsAndStatistics:
+          $ref: '../domain.yaml#/x-maskedModels/SearchResponseFlagsAndStatistics'
+        media:
+          $ref: '../domain.yaml#/x-maskedModels/SearchResponseMedia'      
+        property:
+          $ref: '../domain.yaml#/x-maskedModels/SearchResponseProperty'
+        publication:
+          $ref: '../domain.yaml#/x-maskedModels/SearchResponsePublication'
+        transaction:
+          $ref: '../domain.yaml#/x-maskedModels/SearchResponseTransaction'
+        user:
+          type: object
+          properties:
+            isBookmarked:
+              type: boolean
+    User:
+      description: Information regarding a user 
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 2698109
+        account:
+          type: object
+          properties:
+            acceptsHtmlEmails:
+              type: boolean
+            lastConnection:
+              type: string
+              example: "2018-01-23T08:51:52.753+01:00"
+            lastLogin:
+              type: string  
+              example: "2018-01-19T14:41:06.107+01:00" 
+            connectionOrigin:
+              type: string
+        personal:
+          type: object
+          properties:
+            gender:
+              $ref: '#/x-enums/Gender'
+            lastName:
+              type: string
+            firstName:
+              type: string
+            language:
+              type: string
+              example: "en"
+        address:
+          type: object
+          properties:
+            country:
+              type: string
+            locality:
+              type: string
+              example: Brussels City
+            postalcode:
+              type: string
+        contact:
+          properties:
+            email:
+              type: string
+              example: name.lastname@immoweb.be
+            phoneCallingTime:
+              type: string
+            mobileCallingTime:
+              type: string
+        business:
+          type: object
+        newslettersPreferences:
+          type: object
+          properties:
+            acceptTermsAndConditions:
+              type: boolean
+            acknowledgeInternalPrivacy:
+              type: boolean
+            acknowledgeExternalPrivacy:
+              type: boolean
+            savedEstatesNotifications:
+              type: boolean
+            savedSearchesNotifications:
+              type: boolean
+        userInterests:
+          type: array
+          items:
+            type: object
+            properties:
+              domainCode:
+                $ref: '#/x-enums/DomainCodes'
+              topicCode:
+                $ref: '#/x-enums/TopicCodes'
+              selected:
+                type: boolean
+              label:
+                type: string
+                example: "Bathroom"
+
+  securitySchemes:
+    user_password:
+      type: oauth2
+      flows:
+        password:
+          tokenUrl: 'https://connect-test.immoweb.be/users/oauth/token'
+          scopes:
+            openid: Allow access to ressources accessible for a logged in user
+    apikey_users:
+      type: apiKey
+      name: x-iw-api-key
+      in: header

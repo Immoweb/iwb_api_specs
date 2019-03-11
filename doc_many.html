@@ -3,10 +3,12 @@
   <head>
     <title>ReDoc Demo: Multiple apis</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
     <style>
       body {
         margin: 0;
         padding-top: 40px;
+        font-family: Montserrat, sans-serif;
       }
       nav {
         position: fixed;
@@ -37,28 +39,29 @@
 
     <redoc scroll-y-offset="body > nav"></redoc>
 
-    <script src="https://rebilly.github.io/ReDoc/releases/v1.x.x/redoc.min.js"> </script>
+    
+    <script src="src/redocpro-standalone.min.js"></script>
     <script>
       // list of APIS
       var apis = [
         {
-          name: 'PetStore',
-          url: 'https://rebilly.github.io/ReDoc/swagger.yaml'
+          name: 'Users',
+          url: 'users/1-0.yaml'
         },
         {
-          name: 'Instagram',
-          url: 'https://api.apis.guru/v2/specs/instagram.com/1.0.0/swagger.yaml'
+          name: 'Domain (Shared)',
+          url: 'domain.yaml'
         },
         {
-          name: 'Google Calendar',
-          url: 'https://api.apis.guru/v2/specs/googleapis.com/calendar/v3/swagger.yaml'
+          name: 'Full',
+          url: 'immoweb.yaml'
         }
       ];
       // initially render first API
-      Redoc.init(apis[0].url);
+      RedocPro.init(apis[0].url);
       function onClick() {
         var url = this.getAttribute('data-link');
-        Redoc.init(url);
+        RedocPro.init(url);
       }
       // dynamically building navigation items
       var $list = document.getElementById('links_container');
@@ -69,6 +72,14 @@
         $listitem.addEventListener('click', onClick);
         $list.appendChild($listitem);
       });
+
+
+      RedocPro.init(
+        'users/1.0.yaml',
+        {"showConsole":true,"layout":{"scope":"section"},"theme":{"colors":{"text":{"primary":"#333333"}},"typography":{"headings":{"fontFamily":"Roboto"},"fontFamily":"Roboto, Verdana, Geneva, sans-serif","fontSize":"14px","code":{"fontFamily":"\"Courier New\",monospace","tokens":{"token.property":{"color":"#aofbaa"},"string":{"color":"#aofbaa"}}},"rightPanelHeading":{"color":"white"}},"rightPanel":{"backgroundColor":"#263238"},"links":{"color":"#6CC496"}},"redocURL":"src/redocpro-standalone.min.js","redocExport":"RedocPro","unstable_externalDescription":"description.md"},
+        document.getElementById("redoc_container")
+      );
+    
     </script>
   </body>
 </html>
