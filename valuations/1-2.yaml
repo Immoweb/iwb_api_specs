@@ -1,0 +1,442 @@
+openapi: '3.0.2'
+info:
+  version: '1.2'
+  title: Valuations
+  description: This is the API to get a property price valuation based on ML
+  contact:
+    name: Immoweb API Team
+    email: info@immoweb.be
+servers:
+  - url: https://testapigw.immoweb.be
+tags:
+  - name: Valuation
+
+
+x-comments:
+  DateInfo:
+    string: 'This is a date in ISO 8601 format of YYYY-MM-DDThh:mm:ssZ in UTC time. ex: 2014-01-27T00:40:57.165'
+
+
+paths:
+
+  /valuations:
+    post:
+      description: Allows user to request a property valuation
+      operationId: valuations-post
+      tags:
+        - Valuation
+      security:
+        - ApiGatewayApiKey: []
+      parameters:
+        - $ref: '#/components/parameters/ContentType'
+        - $ref: '#/components/parameters/Accept'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                classified:
+                  type: object
+                  properties:
+                    property:
+                      $ref: '#/components/schemas/Property'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.be.immoweb.valuation.v1.2+json:
+              schema:
+                $ref: '#/components/schemas/Valuation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+
+components:
+
+  schemas:
+
+    Orientation:
+      type: string
+      enum:
+        - NORTH
+        - SOUTH
+        - EAST
+        - WEST
+
+    AbstractProperty:
+      type: object
+      required:
+        - type
+        - basement
+        - bathroom
+        - bedroom
+        - building
+        - energy
+        - livingDescription
+        - location
+        - parking
+        - standing
+        - wellnessEquipment
+      discriminator:
+        propertyName: type
+        mapping:
+          APARTMENT: '#/components/schemas/Apartment'
+          HOUSE: '#/components/schemas/House'
+      properties:
+        type:
+          type: string
+          enum:
+            - APARTMENT
+            - HOUSE
+        basement:
+          type: object
+          required:
+            - exists
+          properties:
+            exists:
+              type: boolean
+            surface:
+              type: integer
+              minimum: 1
+              example: 120
+        bathroom:
+          type: object
+          required:
+            - count
+          properties:
+            count:
+              type: integer
+              minimum: 0
+              maximum: 10
+        bedroom:
+          type: object
+          required:
+            - count
+          properties:
+            count:
+              type: integer
+              minimum: 0
+              maximum: 10
+        building:
+          type: object
+          required:
+            - condition
+            - isBright
+          properties:
+            condition:
+              type: string
+              enum:
+                - GOOD
+                - TO_RESTORE
+                - JUST_RENOVATED
+            constructionYear:
+              type: integer
+              minimum: 1890
+            isBright:
+              type: boolean
+            renovationYear:
+              type: integer
+              minimum: 1890
+        energy:
+          type: object
+          required:
+            - isEfficient
+          properties:
+            isEfficient:
+              type: boolean
+        livingDescription:
+          type: object
+          required:
+            - netHabitableSurface
+          properties:
+            netHabitableSurface:
+              type: integer
+              minimum: 30
+              maximum: 1000
+        location:
+          type: object
+          required:
+            - geoPoint
+            - surroundings
+          properties:
+            geoPoint:
+              type: object
+              required:
+                - latitude
+                - longitude
+              properties:
+                latitude:
+                  type: number
+                  minimum: -90
+                  maximum: 90
+                longitude:
+                  type: number
+                  minimum: -180
+                  maximum: 180
+            surroundings:
+              type: object
+              required:
+                - areCalm
+                - view
+              properties:
+                areCalm:
+                  type: boolean
+                view:
+                  type: object
+                  required:
+                    - type
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - BLOCKED
+                        - OPEN
+                        - UNIQUE
+        parking:
+          type: object
+          required:
+            - parkingSpaceCount
+          properties:
+            parkingSpaceCount:
+              type: object
+              required:
+                - outdoor
+                - indoor
+              properties:
+                outdoor:
+                  type: integer
+                  minimum: 0
+                  maximum: 20
+                indoor:
+                  type: integer
+                  minimum: 0
+                  maximum: 20
+        standing:
+          type: string
+          enum:
+            - AVERAGE
+            - GOOD
+            - GREAT
+        wellnessEquipment:
+          type: object
+          required:
+            - hasSwimmingPool
+          properties:
+            hasSwimmingPool:
+              type: boolean
+
+    Apartment:
+      allOf:
+        - $ref: '#/components/schemas/AbstractProperty'
+        - type: object
+          required:
+            - building
+            - commonEquipment
+            - outdoor
+            - livingRoom
+          properties:
+            building:
+              type: object
+              required:
+                - floorCount
+              properties:
+                floorCount:
+                  type: integer
+                  minimum: 0
+                  maximum: 120
+            commonEquipment:
+              type: object
+              required:
+                - hasLift
+              properties:
+                hasLift:
+                  type: boolean
+            location:
+              type: object
+              properties:
+                address:
+                  type: object
+                  properties:
+                    floor:
+                      type: integer
+                      minimum: 0
+                      maximum: 120
+            outdoor:
+              type: object
+              required:
+                - terrace
+              properties:
+                terrace:
+                  type: object
+                  required:
+                    - exists
+                  properties:
+                    exists:
+                      type: boolean
+                    surface:
+                      type: integer
+                      minimum: 0
+                      maximum: 150
+            livingRoom:
+              type: object
+              required:
+                - orientation
+              properties:
+                orientation:
+                  $ref: '#/components/schemas/Orientation'
+
+    House:
+      allOf:
+        - $ref: '#/components/schemas/AbstractProperty'
+        - type: object
+          required:
+            - attic
+            - building
+            - energy
+            - land
+            - outdoor
+          properties:
+            attic:
+              type: object
+              required:
+                - exists
+              properties:
+                exists:
+                  type: boolean
+            building:
+              type: object
+              required:
+                - facadeCount
+              properties:
+                annexCount:
+                  type: integer
+                  minimum: 0
+                  maximum: 10
+                facadeCount:
+                  type: integer
+                  minimum: 1
+                  maximum: 4
+            energy:
+              type: object
+              required:
+                - hasPhotovoltaicPanels
+              properties:
+                hasPhotovoltaicPanels:
+                  type: boolean
+            land:
+              type: object
+              required:
+                - surface
+              properties:
+                surface:
+                  type: integer
+                  minimum: 1
+                  maximum: 20000
+            outdoor:
+              type: object
+              required:
+                - garden
+              properties:
+                garden:
+                  type: object
+                  required:
+                    - exists
+                  properties:
+                    exists:
+                      type: boolean
+                    surface:
+                      type: integer
+                      minimum: 0
+                    orientation:
+                      $ref: '#/components/schemas/Orientation'
+
+
+    Property:
+      oneOf:
+        - $ref: '#/components/schemas/Apartment'
+        - $ref: '#/components/schemas/House'
+
+    Valuation:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "A1552996204"
+        date:
+          type: string
+          format: date-time
+        confidence_index:
+          type: number
+          minimum: 0
+          maximum: 1
+          example: 0.25
+        estimated_price:
+          type: integer
+          minimum: 0
+        min_price:
+          type: integer
+          minimum: 0
+        max_price:
+          type: integer
+          minimum: 0
+
+
+  parameters:
+
+    ContentType:
+      name: Content-Type
+      description: The content type of the request
+      in: header
+      required: true
+      schema:
+        type: string
+        enum:
+          - application/json
+
+    Accept:
+      name: Accept
+      description: The desired content type of the response
+      in: header
+      required: true
+      schema:
+        type: string
+        enum:
+          - application/vnd.be.immoweb.valuation_request.v1.2+json
+
+  responses:
+
+    BadRequest:
+      description: A malformed request
+      content:
+        application/vnd.be.immoweb.valuation.v1.2+json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Valuation type must be set
+                description: Description of the error
+
+    InternalServerError:
+      description: A server side error
+      content:
+        application/vnd.be.immoweb.valuation.v1.2+json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Generic error occurred
+                description: Description of the error
+
+
+  securitySchemes:
+
+    ApiGatewayApiKey:
+      type: apiKey
+      description: An API key generated by API Gateway
+      name: x-api-key
+      in: header
